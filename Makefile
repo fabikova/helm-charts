@@ -65,6 +65,16 @@ get-chart: ## Get the chart package and prov file from its repository
 delete-chart: ## Delete the chart package and prov file from its repository
 	rm -f ./charts/$(CHART_NAME)-$(CHART_VERSION).tgz*
 
+.PHONY: validate-chart
+validate-chart: $(HELM) ## Validate a specific chart package
+	@echo "Validating chart $(CHART_NAME)-$(CHART_VERSION)..."
+	@chart_file="./charts/$(CHART_NAME)-$(CHART_VERSION).tgz"; \
+	if [[ ! -f "$$chart_file" ]]; then \
+		echo "Chart file not found: $$chart_file"; \
+		exit 1; \
+	fi; \
+	echo "✓ Chart file exists: $$chart_file"
+
 # Organization
 ORG ?= kuadrant
 # GitHub Token with permissions to upload to the release assets
