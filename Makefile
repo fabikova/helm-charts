@@ -45,7 +45,7 @@ REPO_DOWNLOAD_URL=https://github.com/Kuadrant/helm-charts/raw/refs/heads/main/ch
 
 .PHONY: helm-index
 helm-index: $(HELM) ## Update the helm repository index
-	$(HELM) repo index charts --url $(REPO_DOWNLOAD_URL)
+	$(HELM) repo index charts --url $(REPO_DOWNLOAD_URL) --merge charts/index.yaml
 
 ##@ Sync chart packages
 
@@ -64,6 +64,15 @@ get-chart: ## Get the chart package and prov file from its repository
 .PHONY: delete-chart
 delete-chart: ## Delete the chart package and prov file from its repository
 	rm -f ./charts/$(CHART_NAME)-$(CHART_VERSION).tgz*
+
+.PHONY: validate-chart
+validate-chart: $(HELM) ## Basic validation of chart package
+	@chart_file="./charts/$(CHART_NAME)-$(CHART_VERSION).tgz"; \
+	if [[ ! -f "$$chart_file" ]]; then \
+		echo "Chart file not found: $$chart_file"; \
+		exit 1; \
+	fi; \
+	$(HELM) lint "$$chart_file" --strict
 
 # Organization
 ORG ?= kuadrant
